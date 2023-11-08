@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet" />
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link href="https://aaimzenterprises.com/dcpr/public/frontdesign/css/bootstrap.css" rel="stylesheet" />
+    <link href="https://aaimzenterprises.com/dcpr/public/frontdesign/css/styles.css" rel="stylesheet" />
+    <link href="https://aaimzenterprises.com/dcpr/public/frontdesign/css/responsive.css" rel="stylesheet" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"
+        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+        crossorigin="anonymous"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+</head>
+
+<body>
+    <div class="">
+        <div class="container mt-2 w-50">
+            <!--<input type="checkbox" id="checkbox">Select All-->
+            <label for="id_SelectElement" class="col-sm-2">Test Name: </label>
+            <select id="id_SelectElement" placeholder="Select Text" multiple>
+                <option value="0" disabled class="text-dark">Select All</option>
+                <option value="11">Php</option>
+                <option value="22">Bootstrap</option>
+                <option value="33">sql</option>
+                <option value="44">Node Js</option>
+                <option value="55">Laravel</option>
+                <option value="66">Jquery</option>
+                <option value="77">React</option>
+                <option value="88">Vew.JS</option>
+                <option value="99">MVC</option>
+                <option value="10">DotNetCore</option>
+                <option value="12">Java</option>
+                <option value="13">Artifical Intiligence</option>
+                <option value="14">Data Structure</option>
+                <option value="15">Data Science</option>
+                <option value="16">Robotics</option>
+                <option value="17">Node Js 2</option>
+                <option value="18">Laravel 23</option>
+                <option value="19">Jquery 3.4</option>
+            </select>
+        </div>
+
+        
+    </div>
+
+
+    <script type="text/javascript">
+        var Select2MultiCheckBoxObj = [];
+        var id_selectElement = 'id_SelectElement';
+        var staticWordInID = 'state_';
+
+        function AddItemInSelect2MultiCheckBoxObj(id, IsChecked) {
+            if (Select2MultiCheckBoxObj.length > 0) {
+                let index = Select2MultiCheckBoxObj.findIndex(x => x.id == id);
+                if (index > -1) {
+                    Select2MultiCheckBoxObj[index]["IsChecked"] = IsChecked;
+                }
+                else {
+                    Select2MultiCheckBoxObj.push({ "id": id, "IsChecked": IsChecked });
+                }
+            }
+            else {
+                Select2MultiCheckBoxObj.push({ "id": id, "IsChecked": IsChecked });
+            }
+        }
+
+        function IsCheckedAllOption(trueOrFalse) {
+            $.map($('#' + id_selectElement + ' option'), function (option) {
+                AddItemInSelect2MultiCheckBoxObj(option.value, trueOrFalse);
+            });
+            $('#' + id_selectElement + " > option").not(':first').prop("selected", trueOrFalse); //This will select all options and adds in Select2
+            $("#" + id_selectElement).trigger("change");//This will effect the changes
+            $(".select2-results__option").not(':first').attr("aria-selected", trueOrFalse); //This will make grey color of selected options
+
+            $("input[id^='" + staticWordInID + "']").prop("checked", trueOrFalse);
+        }
+
+        $(document).ready(function () {
+            //Begin - Select 2 Multi-Select Code
+            $.map($('#' + id_selectElement + ' option'), function (option) {
+                AddItemInSelect2MultiCheckBoxObj(option.value, false);
+            });
+
+            function formatResult(state) {
+                if (Select2MultiCheckBoxObj.length > 0) {
+                    var stateId = staticWordInID + state.id;
+                    let index = Select2MultiCheckBoxObj.findIndex(x => x.id == state.id);
+                    if (index > -1) {
+                        var checkbox = $('<div class="checkbox"><input class="select2Checkbox" id="' + stateId + '" type="checkbox" ' + (Select2MultiCheckBoxObj[index]["IsChecked"] ? 'checked' : '') +
+                            '><label for="checkbox' + stateId + '">' + state.text + '</label></div>', { id: stateId });
+                        return checkbox;
+                    }
+                }
+            }
+
+            let optionSelect2 = {
+                templateResult: formatResult,
+                closeOnSelect: false,
+                width: '100%'
+            };
+
+            let $select2 = $("#" + id_selectElement).select2(optionSelect2);
+
+
+            $select2.on("select2:select", function (event) {
+                $("#" + staticWordInID + event.params.data.id).prop("checked", true);
+                AddItemInSelect2MultiCheckBoxObj(event.params.data.id, true);
+                //If all options are slected then selectAll option would be also selected.
+                if (Select2MultiCheckBoxObj.filter(x => x.IsChecked === false).length === 1) {
+                    AddItemInSelect2MultiCheckBoxObj(0, true);
+                    $("#" + staticWordInID + "0").prop("checked", true);
+                }
+            });
+
+            $select2.on("select2:unselect", function (event) {
+                $("#" + staticWordInID + "0").prop("checked", false);
+                AddItemInSelect2MultiCheckBoxObj(0, false);
+                $("#" + staticWordInID + event.params.data.id).prop("checked", false);
+                AddItemInSelect2MultiCheckBoxObj(event.params.data.id, false);
+            });
+
+            $(document).on("click", "#" + staticWordInID + "0", function () {
+                //var b = !($("#state_SelectAll").is(':checked'));
+                var b = $("#" + staticWordInID + "0").is(':checked');
+
+                IsCheckedAllOption(b);
+                //state_CheckAll = b;
+                //$(window).scroll();
+            });
+            $(document).on("click", ".select2Checkbox", function (event) {
+                let selector = "#" + this.id;
+                let isChecked = Select2MultiCheckBoxObj[Select2MultiCheckBoxObj.findIndex(x => x.id == this.id.replaceAll(staticWordInID, ''))]['IsChecked'];
+                $(selector).prop("checked", isChecked);
+            });
+
+        });
+    </script>
+</body>
+
+</html>
