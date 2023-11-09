@@ -46,30 +46,7 @@ To enable the Bootstrap Multi-Select with checkboxes, you need to initialize it 
 
 ```
 <script>
-    $('#multiple-checkboxes').multiselect({
-        buttonClass: 'form-select',
-        templates: {
-            button: '<button type="button" class="multiselect dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><span class="multiselect-selected-text"></span></button>',
-        }
-    });
-    $('#p-nhb').multiselect({
-        buttonClass: 'form-select',
-        templates: {
-            button: '<button type="button" class="multiselect dropdown-toggle" data-bs-toggle="dropdown" ><span class="multiselect-selected-text"></span></button>',
-        }
-    });
-    var select_clone = $('<select>')
-        .html($('#p-nhb option'))
-        .hide()
-        .insertAfter('#p-nhb');
-    $('#p-nhb').multiselect();
-    $('#multiple-checkboxes').change(function () {
-        $('#p-nhb').html(select_clone.find('[data-value="' + this.value + '"]').clone());
-        $('#p-nhb').multiselect('rebuild');
-    }).change();
-    $('#get').click(function () {
-        console.log('city: ' + $('#multiple-checkboxes').val() + ', neighborhood: ' + $('#p-nhb').val().toString());
-    });
+......
 </script>
 ```
 This script initializes the Bootstrap Multi-Select for both <select> elements and provides functionality to dynamically update the options in the "p-nhb" dropdown based on the selections in the "multiple-checkboxes" dropdown.
